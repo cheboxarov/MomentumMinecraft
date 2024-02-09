@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/image">
+        <file>images/main.png</file>
+        <file>images/minecraft.ttf</file>
+        <file>images/main2.jpg</file>
+        <file>images/icon.png</file>
+        <file>images/main3.jpg</file>
+        <file>images/main4.jpg</file>
+        <file>images/main5.png</file>
+        <file>images/main6.jpeg</file>
+        <file>images/minecraft2.otf</file>
+    </qresource>
+</RCC>
