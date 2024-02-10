@@ -12,7 +12,7 @@ StartButton::StartButton(QLabel* boxVal, QWidget *parent) :
 {
     box->setObjectName("startButtonBox");
     box->setGeometry(QRect(20, GetHeight()+8, 330, 65));
-    box->setStyleSheet("background-color: rgb(109, 100, 157); border-radius:17px;");
+    box->setStyleSheet("background-color: rgb(109, 100, 157); border-radius:17px; border: 2px solid rgb(89, 80, 137)");
     installEventFilter(this);
     int id = QFontDatabase::addApplicationFont(":/image/images/minecraft.ttf");
     QString family = QFontDatabase::applicationFontFamilies(id).at(0);
@@ -57,6 +57,14 @@ const QColor& StartButton::GetColor() const
 
 bool StartButton::eventFilter(QObject *obj, QEvent *e)
 {
+    if (e->type() == QEvent::MouseButtonRelease) {
+        SetHeight(GetHeight());
+    }
+
+    if (e->type() == QEvent::MouseButtonPress || e->type() == QEvent::MouseButtonDblClick) {
+        SetHeight(GetHeight()+2);
+    }
+
     if (e->type() == QEvent::HoverEnter) {
         StartHoverEnterAnimation();
     }
@@ -77,7 +85,7 @@ void StartButton::StartHoverEnterAnimation()
 
     m_pressAnimation.setDuration(100);
     m_pressAnimation.setStartValue(GetHeight());
-    m_pressAnimation.setEndValue(GetHeight()+2);
+    m_pressAnimation.setEndValue(GetHeight()+1);
     m_colorAnimation.setEasingCurve(QEasingCurve::Linear);//animation style
 
     m_colorAnimation.setDuration(100); //set your transition
@@ -99,7 +107,7 @@ void StartButton::StartHoverLeaveAnimation()
 
     m_pressAnimation.setDuration(100);
     m_pressAnimation.setStartValue(GetHeight());
-    m_pressAnimation.setEndValue(GetHeight()-2);
+    m_pressAnimation.setEndValue(GetHeight()-1);
     m_colorAnimation.setEasingCurve(QEasingCurve::Linear);//animation style
 
     m_colorAnimation.setDuration(100); //set your transition

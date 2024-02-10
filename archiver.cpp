@@ -17,7 +17,7 @@ bool Archiver::enumerateArchive() {
     int err; // Код последней ошибки
     // Попытаться открыть файл с архивом, если не получилось - сообщить об ощибке
     if ((za = zip_open(filePath, ZIP_CREATE | ZIP_RDONLY, &err)) == NULL) {
-        qDebug() << "Archve not found";
+        qDebug() << "archve not found";
         return false;
     }
     // Пройтись по всем элементам архива

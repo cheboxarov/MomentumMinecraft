@@ -25,7 +25,7 @@
    <property name="styleSheet">
     <string notr="true">background-image:   url(:/image/images/main6.jpeg);
 background-position: center;
-border: 0px solid;
+border: 0px solid rgb(50, 50, 50);;
 
 </string>
    </property>
@@ -33,7 +33,7 @@ border: 0px solid;
     <property name="geometry">
      <rect>
       <x>32</x>
-      <y>50</y>
+      <y>51</y>
       <width>421</width>
       <height>481</height>
      </rect>
@@ -65,7 +65,7 @@ border-radius: 0px;
 color: white;</string>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;TITLE&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Ошибка!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QLabel" name="textAbout">
@@ -81,10 +81,11 @@ color: white;</string>
       <string notr="true">border:0px solid;
 background: rgba(0,0,0,0);
 color: white;
- text-align: center;</string>
+ text-align: center;
+line-height:3px;</string>
      </property>
      <property name="text">
-      <string>TextLabel</string>
+      <string>Нет доступных версий</string>
      </property>
     </widget>
    </widget>
@@ -110,8 +111,11 @@ border: 0px solid;</string>
        <x>10</x>
        <y>10</y>
        <width>351</width>
-       <height>351</height>
+       <height>281</height>
       </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
      </property>
      <property name="title">
       <string/>
@@ -121,7 +125,7 @@ border: 0px solid;</string>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>320</y>
+       <y>310</y>
        <width>331</width>
        <height>31</height>
       </rect>
@@ -151,7 +155,7 @@ color: white;</string>
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_3">
+   <widget class="QGroupBox" name="downLine">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -161,7 +165,7 @@ color: white;</string>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background:rgb(56, 49, 77);</string>
+     <string notr="true">background:rgb(50, 50, 50);</string>
     </property>
     <property name="title">
      <string/>
@@ -190,8 +194,7 @@ color: white;</string>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background:rgb(56, 49, 77);
-border-radius-top: 15px;
+     <string notr="true">background:rgb(50, 50, 50);
 </string>
     </property>
     <property name="title">

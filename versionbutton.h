@@ -35,8 +35,9 @@ private:
     QPropertyAnimation m_selectAnimation;
     QPropertyAnimation m_colorAnimation;
     int index;
-    void StartHoverEnterAnimation();
-    void StartHoverLeaveAnimation();
+    void StartHoverEnterAnimation(int width = 5);
+    void StartHoverLeaveAnimation(int width = 5);
+    bool isHovered = false;
 };
 
 #endif // VERSIONBUTTON_H

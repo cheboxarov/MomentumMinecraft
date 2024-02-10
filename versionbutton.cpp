@@ -42,7 +42,7 @@ int& VersionButton::getWidth() {
 
 void VersionButton::setWidth(int width) {
     this->width = width;
-    this->setGeometry(QRect(22 - width, index*110+5, 300, 100));
+    this->setGeometry(QRect(22 - width, index*110+5, 300 + width, 100));
 }
 
 void VersionButton::SetColor(const QColor& color)
@@ -70,12 +70,17 @@ Version VersionButton::getVersion() {
 
 bool VersionButton::eventFilter(QObject *obj, QEvent *e)
 {
+
     if (e->type() == QEvent::HoverEnter) {
-        StartHoverEnterAnimation();
+        isHovered = true;
+        if (!selected)
+            StartHoverEnterAnimation();
     }
 
     if (e->type() == QEvent::HoverLeave) {
-        StartHoverLeaveAnimation();
+        isHovered = false;
+        if (!selected)
+            StartHoverLeaveAnimation();
     }
 
     return false;
@@ -84,8 +89,11 @@ bool VersionButton::eventFilter(QObject *obj, QEvent *e)
 int VersionButton::getIndex() { return index; }
 
 void VersionButton::setSelected(bool state) {
+    if (selected == state)
+        return;
     selected = state;
     if (state) {
+        StartHoverEnterAnimation(20);
         QString css;
         css = "QPushButton { color:white; border-radius: 10px; ";
         if (selected)
@@ -95,6 +103,7 @@ void VersionButton::setSelected(bool state) {
         css.append("background: url(" + version.photo +  "); }");
         setStyleSheet(css);
     } else {
+        StartHoverLeaveAnimation(20);
         QString css;
         css = "QPushButton { color:white; border-radius: 10px; ";
         if (selected)
@@ -108,12 +117,12 @@ void VersionButton::setSelected(bool state) {
 
 bool VersionButton::isSelected() { return selected; }
 
-void VersionButton::StartHoverEnterAnimation()
+void VersionButton::StartHoverEnterAnimation(int width)
 {
     m_selectAnimation.stop();
     m_selectAnimation.setDuration(100);
-    m_selectAnimation.setStartValue(0);
-    m_selectAnimation.setEndValue(10);
+    m_selectAnimation.setStartValue(getWidth());
+    m_selectAnimation.setEndValue(width);
     m_colorAnimation.setEasingCurve(QEasingCurve::Linear);//animation style
     m_selectAnimation.start();
 
@@ -128,11 +137,11 @@ void VersionButton::StartHoverEnterAnimation()
     //m_colorAnimation.start();
 }
 
-void VersionButton::StartHoverLeaveAnimation()
+void VersionButton::StartHoverLeaveAnimation(int width)
 {
     m_selectAnimation.stop();
     m_selectAnimation.setDuration(100);
-    m_selectAnimation.setStartValue(10);
+    m_selectAnimation.setStartValue(getWidth());
     m_selectAnimation.setEndValue(0);
     m_colorAnimation.setEasingCurve(QEasingCurve::Linear);//animation style
     m_selectAnimation.start();

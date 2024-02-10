@@ -11,35 +11,48 @@
 #include <string>
 #include "QProcess"
 #include "QPainterPath"
+#include "QGraphicsBlurEffect"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
     , isReadyToStart(false)
+    , ui(new Ui::MainWindow)
     , versions(new Versions)
     , downloader(new Downloader)
 {
     ui->setupUi(this);
     ui->upperGroupBox->installEventFilter(this);
     ui->clientNameLine->installEventFilter(this);
+
     QPainterPath painPath;
     painPath.addRoundedRect(rect(), 8, 8, Qt::AbsoluteSize);
     this->setMask(painPath.toFillPolygon().toPolygon());
-    QLabel* box = new QLabel(ui->groupBox_2);
-    startButton = new StartButton(box, ui->groupBox_2);
+
     initMainWindow();
     initClientSettings();
 
 }
 
+MainWindow::~MainWindow()
+{
+    if (client.nickname != "Твой никнейм" && client.nickname != "Выберите ник!") {
+        Config::saveConfig(client.nickname);
+        qDebug() << "Save config" << client.nickname;
+    }
+    delete ui;
+    delete versions;
+}
+
 void MainWindow::initClientSettings() {
     QString client_name = Config::getNickname();
-    client = new Client(client_name);
     ui->clientNameLine->setText(client_name);
+    client.nickname = client_name;
 }
 
 void MainWindow::initMainWindow()
 {
+    startButton = new StartButton(new QLabel(ui->groupBox_2), ui->groupBox_2);
+
     int id = QFontDatabase::addApplicationFont(":/image/images/minecraft.ttf");
     QString family = QFontDatabase::applicationFontFamilies(id).at(0);
     QFont minectaft_font(family);
@@ -83,8 +96,11 @@ void MainWindow::setReadyToStart(bool state) {
 }
 
 void MainWindow::showVersions() {
-    for(Version version : versions->loaded_versions) {
-        qDebug() << version.minecraft_version << version.name << version.size << version.url_to_download;
+    if (versions->getLoadedVersions().empty())
+        return;
+
+    for(Version version : versions->getLoadedVersions()) {
+        qDebug() << "Loaded version:" << version.minecraft_version << version.name << version.size << version.url_to_download;
         versionButtons.push_back(new VersionButton(version, versionButtons.size(), ui->versionsBox));
     }
     for(VersionButton* btn : versionButtons) {
@@ -94,18 +110,14 @@ void MainWindow::showVersions() {
         setSelecterVersionBtn(0);
 }
 
-MainWindow::~MainWindow()
-{
-    delete ui;
-    delete versions;
-}
+
 
 void MainWindow::setSelecterVersionBtn(int index) {
     VersionButton* btn = versionButtons[index];
     btn->setSelected(true);
-    ui->titleAbout->setText(versions->loaded_versions[index].name);
+    ui->titleAbout->setText(versions->getLoadedVersions()[index].name);
     ui->titleAbout->setAlignment(Qt::AlignCenter);
-    ui->textAbout->setText(versions->loaded_versions[index].description);
+    ui->textAbout->setText(versions->getLoadedVersions()[index].description);
     selectedVersionIndex = btn->getVersion().id;
     qDebug() << selectedVersionIndex;
     setReadyToStart(checkVersionIsDownladed());
@@ -147,6 +159,8 @@ void MainWindow::changeDownloadProgress(qint64 bytesSent, qint64 bytesTotal) {
 }
 
 void MainWindow::downloadSelectedVersion() {
+    if (getSelectedVersion().isNull)
+        return;
     Version selected_ver = getSelectedVersion();
     QUrl url_to_download = selected_ver.url_to_download;
     QString repos = QCoreApplication::applicationDirPath() + "/" + selected_ver.name_of_file + ".zip";
@@ -175,7 +189,6 @@ void replace_first(
 
 void MainWindow::on_startButton_clicked()
 {
-    client->nickname = ui->clientNameLine->text();
     setReadyToStart(checkVersionIsDownladed());
     if (!isReadyToStart) {
         if (!isDownloading()) {
@@ -184,12 +197,14 @@ void MainWindow::on_startButton_clicked()
             stopDownloading();
         }
     } else {
+        if (getSelectedVersion().isNull)
+            return;
         std::string start(getSelectedVersion().startcmd);
-        if (client->nickname == "Твой никнейм")
+        if (client.nickname == "Твой никнейм")
             ui->clientNameLine->setText("Выберите ник!");
-        if (client->nickname != "Твой никнейм" && client->nickname != "Выберите ник!") {
-            Config::saveConfig(client->nickname);
-            replace_first(start, "nickname", client->nickname.toStdString());
+        if (client.nickname != "Твой никнейм" && client.nickname != "Выберите ник!") {
+            Config::saveConfig(client.nickname);
+            replace_first(start, "nickname", client.nickname.toStdString());
             this->hide();
             system(start.c_str());
             this->show();
@@ -203,6 +218,7 @@ Version MainWindow::getSelectedVersion() {
             return btn->getVersion();
         }
     }
+    return Version(true);
 }
 
 bool dirExists(const std::string& dirName_in)
@@ -216,6 +232,8 @@ bool dirExists(const std::string& dirName_in)
 }
 
 bool MainWindow::checkVersionIsDownladed() {
+    if (getSelectedVersion().isNull)
+        return false;
     Version selected_ver = getSelectedVersion();
     QString repos = QCoreApplication::applicationDirPath() + "/" + selected_ver.name_of_file + ".zip";
     std::fstream file(repos.toStdString());
@@ -287,5 +305,11 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event)
 void MainWindow::on_pushButton_2_clicked()
 {
     showMinimized();
+}
+
+
+void MainWindow::on_clientNameLine_textChanged(const QString &nick)
+{
+    client.nickname = nick;
 }
 

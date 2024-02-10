@@ -31,8 +31,7 @@ QString Config::getNickname() {
             }
 
         }
+        file.close();
     }
-    file.close();
-    qDebug() << nick;
     return nick;
 }

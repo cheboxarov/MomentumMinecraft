@@ -2,6 +2,10 @@
 #include "QCoreApplication"
 Versions::Versions() {}
 
+QVector<Version> Versions::getLoadedVersions() {
+    return loaded_versions;
+}
+
 void Versions::loadVersions() {
     Version caves_and_cliffs;
     caves_and_cliffs.name = "CAVES & CLIFFS";

@@ -15,7 +15,6 @@ class MainWindow;
 QT_END_NAMESPACE
 class StartButton;
 struct Client {
-    Client(QString nickname) : nickname(nickname) {}
     QString nickname;
 };
 
@@ -47,6 +46,8 @@ private slots:
     void on_pushButton_clicked();
     void on_pushButton_2_clicked();
 
+    void on_clientNameLine_textChanged(const QString &arg1);
+
 private:
     virtual void mousePressEvent(QMouseEvent* event);
     virtual void resizeEvent(QResizeEvent* event);
@@ -58,7 +59,7 @@ private:
     int selectedVersionIndex;
     bool downloading;
     bool isReadyToStart;
-    Client* client;
+    Client client;
     Ui::MainWindow *ui;
     Versions* versions;
     QVector<VersionButton*> versionButtons;

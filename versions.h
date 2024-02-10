@@ -3,6 +3,8 @@
 #include "QString"
 #include "QVector"
 struct Version {
+    Version() {};
+    Version(bool isNull) : isNull(isNull) {}
     QString name;
     QString name_of_file;
     QString minecraft_version;
@@ -12,6 +14,7 @@ struct Version {
     char* startcmd;
     int size;
     int id;
+    bool isNull = false;
 };
 
 class Versions
@@ -19,6 +22,8 @@ class Versions
 public:
     Versions();
     void loadVersions();
+    QVector<Version> getLoadedVersions();
+private:
     QVector<Version> loaded_versions;
 };
 
