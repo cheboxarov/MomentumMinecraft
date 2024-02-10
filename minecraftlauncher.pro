@@ -1,5 +1,6 @@
 QT       += core gui
 QT += network
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
@@ -10,17 +11,21 @@ CONFIG += c++17
 
 SOURCES += \
     archiver.cpp \
+    config.cpp \
     downloader.cpp \
     main.cpp \
     mainwindow.cpp \
+    qregexp.cpp \
     startbutton.cpp \
     versionbutton.cpp \
     versions.cpp
 
 HEADERS += \
     archiver.h \
+    config.h \
     downloader.h \
     mainwindow.h \
+    qregexp.h \
     startbutton.h \
     versionbutton.h \
     versions.h

@@ -13,8 +13,8 @@ StartButton::StartButton(QLabel* boxVal, QWidget *parent) :
     box->setObjectName("startButtonBox");
     box->setGeometry(QRect(20, GetHeight()+8, 330, 65));
     box->setStyleSheet("background-color: rgb(109, 100, 157); border-radius:17px;");
-    this->installEventFilter(this);
-    int id = QFontDatabase::addApplicationFont(":/image/images/minecraft2.otf");
+    installEventFilter(this);
+    int id = QFontDatabase::addApplicationFont(":/image/images/minecraft.ttf");
     QString family = QFontDatabase::applicationFontFamilies(id).at(0);
     QFont minectaft_font(family);
     this->setFont(minectaft_font);
@@ -53,6 +53,8 @@ const QColor& StartButton::GetColor() const
     return m_currentColor;
 }
 
+
+
 bool StartButton::eventFilter(QObject *obj, QEvent *e)
 {
     if (e->type() == QEvent::HoverEnter) {
@@ -78,7 +80,7 @@ void StartButton::StartHoverEnterAnimation()
     m_pressAnimation.setEndValue(GetHeight()+2);
     m_colorAnimation.setEasingCurve(QEasingCurve::Linear);//animation style
 
-    m_colorAnimation.setDuration(200); //set your transition
+    m_colorAnimation.setDuration(100); //set your transition
     m_colorAnimation.setStartValue(GetColor()); //starts from current color
     m_colorAnimation.setEndValue(QColor(255,255,255));//set your hover color
 
@@ -100,7 +102,7 @@ void StartButton::StartHoverLeaveAnimation()
     m_pressAnimation.setEndValue(GetHeight()-2);
     m_colorAnimation.setEasingCurve(QEasingCurve::Linear);//animation style
 
-    m_colorAnimation.setDuration(200); //set your transition
+    m_colorAnimation.setDuration(100); //set your transition
     m_colorAnimation.setStartValue(GetColor()); //starts from current color
     m_colorAnimation.setEndValue(QColor(129, 120, 177));//set your regular color
 

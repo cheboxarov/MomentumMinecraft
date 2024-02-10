@@ -9,5 +9,7 @@
         <file>images/main5.png</file>
         <file>images/main6.jpeg</file>
         <file>images/minecraft2.otf</file>
+        <file>images/btn.png</file>
+        <file>images/btn1.png</file>
     </qresource>
 </RCC>

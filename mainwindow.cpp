@@ -10,6 +10,7 @@
 #include <windows.h>
 #include <string>
 #include "QProcess"
+#include "QPainterPath"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -19,38 +20,46 @@ MainWindow::MainWindow(QWidget *parent)
     , downloader(new Downloader)
 {
     ui->setupUi(this);
-    delete ui->startButton;
+    ui->upperGroupBox->installEventFilter(this);
+    ui->clientNameLine->installEventFilter(this);
+    QPainterPath painPath;
+    painPath.addRoundedRect(rect(), 8, 8, Qt::AbsoluteSize);
+    this->setMask(painPath.toFillPolygon().toPolygon());
     QLabel* box = new QLabel(ui->groupBox_2);
-    ui->startButton = new StartButton(box, ui->groupBox_2);
+    startButton = new StartButton(box, ui->groupBox_2);
     initMainWindow();
     initClientSettings();
+
 }
 
 void MainWindow::initClientSettings() {
-    QString client_name = "Твой никнейм";
+    QString client_name = Config::getNickname();
     client = new Client(client_name);
     ui->clientNameLine->setText(client_name);
 }
 
 void MainWindow::initMainWindow()
 {
-    int id = QFontDatabase::addApplicationFont(":/image/images/minecraft2.otf");
+    int id = QFontDatabase::addApplicationFont(":/image/images/minecraft.ttf");
     QString family = QFontDatabase::applicationFontFamilies(id).at(0);
     QFont minectaft_font(family);
 
-    minectaft_font.setPixelSize(18);
+    minectaft_font.setPixelSize(16);
     ui->textAbout->setFont(minectaft_font);
     ui->textAbout->setAlignment(Qt::AlignCenter);
     ui->textAbout->setIndent(5);
 
     minectaft_font.setWeight(QFont::Bold);
-    minectaft_font.setPixelSize(40);
+    minectaft_font.setPixelSize(35);
     ui->titleAbout->setFont(minectaft_font);
 
     minectaft_font.setPixelSize(30);
     ui->downloadProgress->setFont(minectaft_font);
     ui->downloadProgress->setAlignment(Qt::AlignCenter);
 
+    minectaft_font.setWeight(QFont::Normal);
+    minectaft_font.setPixelSize(20);
+    ui->clientNameLine->setFont(minectaft_font);
     ui->clientNameLine->setAlignment(Qt::AlignCenter);
 
     setReadyToStart(isReadyToStart);
@@ -61,15 +70,15 @@ void MainWindow::initMainWindow()
     QObject::connect(downloader, &Downloader::downloadFinished, this, &MainWindow::downloadFinished);
     QObject::connect(downloader, &Downloader::downloadProgress, this, &MainWindow::changeDownloadProgress);
 
-    QObject::connect(ui->startButton, SIGNAL(clicked()), this, SLOT(on_startButton_clicked()));
+    QObject::connect(startButton, SIGNAL(clicked()), this, SLOT(on_startButton_clicked()));
 }
 
 void MainWindow::setReadyToStart(bool state) {
     isReadyToStart = state;
     if (state) {
-        ui->startButton->setText(QCoreApplication::translate("MainWindow", "\320\230\320\223\320\240\320\220\320\242\320\254", nullptr));
+        startButton->setText(QCoreApplication::translate("MainWindow", "\320\230\320\223\320\240\320\220\320\242\320\254", nullptr));
     } else {
-        ui->startButton->setText(QString("Загрузить"));
+        startButton->setText(QString("Загрузить"));
     }
 }
 
@@ -118,7 +127,7 @@ bool MainWindow::isDownloading() { return downloading; }
 
 void MainWindow::setDownloading(bool state) {
     if (state)
-        ui->startButton->setText("Отменить");
+        startButton->setText("Отменить");
     else {
         ui->downloadProgress->setText("");
         setReadyToStart(checkVersionIsDownladed());
@@ -175,11 +184,16 @@ void MainWindow::on_startButton_clicked()
             stopDownloading();
         }
     } else {
-        this->hide();
         std::string start(getSelectedVersion().startcmd);
-        replace_first(start, "penis", client->nickname.toStdString());
-        system(start.c_str());
-        this->show();
+        if (client->nickname == "Твой никнейм")
+            ui->clientNameLine->setText("Выберите ник!");
+        if (client->nickname != "Твой никнейм" && client->nickname != "Выберите ник!") {
+            Config::saveConfig(client->nickname);
+            replace_first(start, "nickname", client->nickname.toStdString());
+            this->hide();
+            system(start.c_str());
+            this->show();
+        }
     }
 }
 
@@ -211,13 +225,13 @@ bool MainWindow::checkVersionIsDownladed() {
     int size = file.tellg();
     file.close();
     if (size == selected_ver.size) {
-        ui->startButton->setText(QString("Загрузка"));
+        startButton->setText(QString("Загрузка"));
         std::string game_dir = QString(QCoreApplication::applicationDirPath() + "/game").toStdString();
         if (!dirExists(game_dir)) {
             Archiver ar((char*)repos.toStdString().c_str(), "");
             ar.enumerateArchive();
         }
-        ui->startButton->setText(QString("Играть"));
+        startButton->setText(QString("Играть"));
         return true;
     }
     return false;
@@ -227,5 +241,51 @@ bool MainWindow::checkVersionIsDownladed() {
 void MainWindow::on_pushButton_clicked()
 {
     this->close();
+}
+
+bool MainWindow::eventFilter(QObject* obj, QEvent* e) {
+    if (obj == (QObject*)ui->upperGroupBox) {
+        if (e->type() == QEvent::Enter) {
+            m_inUpperDrag = true;
+        }
+        if (e->type() == QEvent::Leave) {
+            m_inUpperDrag = false;
+        }
+        return QWidget::eventFilter(obj, e);;
+    }
+    if (obj == (QObject*)ui->clientNameLine) {
+        if (e->type() == QEvent::MouseButtonPress) {
+            if (ui->clientNameLine->text() == "Твой никнейм" || ui->clientNameLine->text() == "Выберите ник!") {
+                ui->clientNameLine->setText("");
+            }
+        }
+    }
+}
+
+void MainWindow::mousePressEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton) {
+        m_mousePoint = event->pos();
+        event->accept();
+    }
+}
+
+void MainWindow::resizeEvent(QResizeEvent* event)
+{
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent* event)
+{
+    if (m_inUpperDrag) {
+        const QPointF delta = event->globalPos() - m_mousePoint;
+        move(delta.toPoint());
+
+        event->accept();
+    }
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    showMinimized();
 }
 
