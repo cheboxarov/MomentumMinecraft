@@ -2,6 +2,8 @@
 #define VERSIONS_H
 #include "QString"
 #include "QVector"
+#include "downloader.h"
+
 struct Version {
     Version() {};
     Version(bool isNull) : isNull(isNull) {}
@@ -11,20 +13,28 @@ struct Version {
     QString url_to_download;
     QString description;
     QString photo;
-    char* startcmd;
+    std::string startcmd;
     int size;
     int id;
     bool isNull = false;
 };
 
-class Versions
+class Versions : public QObject
 {
+    Q_OBJECT
 public:
-    Versions();
-    void loadVersions();
+    Versions(QObject *parent = nullptr);
+    virtual ~Versions() {}
+    void startDownloadVersions();
     QVector<Version> getLoadedVersions();
 private:
+    Downloader *downloader;
     QVector<Version> loaded_versions;
+public slots:
+    void loadVersions();
+    void loadError();
+signals:
+    void versionsLoaded(bool withError);
 };
 
 #endif // VERSIONS_H

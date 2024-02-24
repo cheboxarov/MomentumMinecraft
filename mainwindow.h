@@ -1,68 +1,82 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+
 #include <QMainWindow>
 #include "versionbutton.h"
 #include "versions.h"
 #include <QMouseEvent>
 #include <QPoint>
 #include "config.h"
+#include "QLabel"
 
 class Downloader;
+class StartButton;
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
 }
 QT_END_NAMESPACE
-class StartButton;
-struct Client {
-    QString nickname;
-};
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
-    void initMainWindow();
+
+    void initializeMainWindow();
     void setReadyToStart(bool state);
-    void showVersions();
-    void setSelecterVersionBtn(int index);
-    bool isDownloading();
+    void showAvailableVersions();
+    void setSelectedVersionButton(int index);
+    bool isDownloading() const;
     void setDownloading(bool state);
-    bool checkVersionIsDownladed();
+    bool isVersionDownloaded(bool isFirst = false) const;
     void downloadSelectedVersion();
     void stopDownloading();
-    void initClientSettings();
+    void initializeClientSettings();
     bool eventFilter(QObject* obj, QEvent* e);
+
 public slots:
-    void downloadFinished();
-    void changeDownloadProgress(qint64 bytesSent, qint64 bytesTotal);
-    void on_click_versionButton(int);
-    void on_startButton_clicked();
-    Version getSelectedVersion();
+    void handleLoadedVersions(bool error);
+    void handleDownloadFinished();
+    void updateDownloadProgress(qint64 bytesSent, qint64 bytesTotal);
+    void onVersionButtonClick(int index);
+    void onStartButtonClick();
+    const Version& getSelectedVersion() const;
+    void archiverProgress(int current, int total);
+
 private slots:
     void on_pushButton_clicked();
     void on_pushButton_2_clicked();
-
-    void on_clientNameLine_textChanged(const QString &arg1);
+    void on_clientNameLine_textChanged(const QString& newNickname);
 
 private:
-    virtual void mousePressEvent(QMouseEvent* event);
-    virtual void resizeEvent(QResizeEvent* event);
-    virtual void mouseMoveEvent(QMouseEvent* event);
+    void mousePressEvent(QMouseEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void wheelEvent(QWheelEvent* event) override;
+
 private:
+    int wheelOffset = 0;
     StartButton* startButton;
-    bool m_inUpperDrag = false;
-    QPointF m_mousePoint;
+    bool isInUpperDrag;
+    bool isInScrollArea = false;
+    QPointF mousePoint;
     int selectedVersionIndex;
     bool downloading;
     bool isReadyToStart;
-    Client client;
-    Ui::MainWindow *ui;
+
+    struct Client {
+        QString nickname;
+    } client;
+
+    Ui::MainWindow* ui;
     Versions* versions;
     QVector<VersionButton*> versionButtons;
     Downloader* downloader;
+    QLabel* loadingVersionsLabel;
 };
+
 #endif // MAINWINDOW_H

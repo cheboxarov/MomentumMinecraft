@@ -35,7 +35,7 @@ border: 0px solid rgb(50, 50, 50);;
       <x>32</x>
       <y>51</y>
       <width>421</width>
-      <height>481</height>
+      <height>341</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -51,7 +51,7 @@ border-radius: 17px;
      <property name="geometry">
       <rect>
        <x>26</x>
-       <y>30</y>
+       <y>21</y>
        <width>371</width>
        <height>51</height>
       </rect>
@@ -71,10 +71,10 @@ color: white;</string>
     <widget class="QLabel" name="textAbout">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>90</y>
-       <width>401</width>
-       <height>211</height>
+       <x>26</x>
+       <y>70</y>
+       <width>371</width>
+       <height>221</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -82,7 +82,10 @@ color: white;</string>
 background: rgba(0,0,0,0);
 color: white;
  text-align: center;
-line-height:3px;</string>
+line-height:3px;
+border-radius:0px;
+border-top:2px solid white;
+border-bottom: 2px solid white;</string>
      </property>
      <property name="text">
       <string>Нет доступных версий</string>
@@ -105,54 +108,31 @@ border: 0px solid;</string>
     <property name="title">
      <string/>
     </property>
-    <widget class="QGroupBox" name="versionsBox">
+    <widget class="QScrollArea" name="scrollArea">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>10</y>
+       <y>0</y>
        <width>351</width>
-       <height>281</height>
+       <height>491</height>
       </rect>
      </property>
      <property name="styleSheet">
       <string notr="true"/>
      </property>
-     <property name="title">
-      <string/>
+     <property name="widgetResizable">
+      <bool>true</bool>
      </property>
-    </widget>
-    <widget class="QLabel" name="downloadProgress">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>310</y>
-       <width>331</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color:white;</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="clientNameLine">
-     <property name="geometry">
-      <rect>
-       <x>44</x>
-       <y>350</y>
-       <width>281</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background:rgb(149, 140, 197);
-border: 3px solid rgb(129, 120, 177);
-border-bottom: 3px solid rgb(179, 170, 227);
-border-radius: 7px;
-color: white;</string>
-     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>351</width>
+        <height>491</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QGroupBox" name="downLine">
@@ -255,6 +235,56 @@ border-radius:10px;
      </property>
      <property name="icon">
       <iconset theme="phone"/>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="downloadProgress">
+    <property name="geometry">
+     <rect>
+      <x>81</x>
+      <y>352</y>
+      <width>331</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:white;
+background: rgba(0,0,0,0);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>33</x>
+      <y>396</y>
+      <width>421</width>
+      <height>141</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background:rgba(0,0,0,0)</string>
+    </property>
+    <property name="title">
+     <string/>
+    </property>
+    <widget class="QLineEdit" name="clientNameLine">
+     <property name="geometry">
+      <rect>
+       <x>69</x>
+       <y>2</y>
+       <width>281</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:rgb(149, 140, 197);
+border: 3px solid rgb(129, 120, 177);
+border-bottom: 3px solid rgb(179, 170, 227);
+border-radius: 7px;
+color: white;</string>
      </property>
     </widget>
    </widget>

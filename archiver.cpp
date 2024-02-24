@@ -8,8 +8,9 @@
 #include <zip.h>
 #include <QDebug>
 #include <QDir>
+#include <thread>
 
-Archiver::Archiver(char* filePath, char* archiveRoot) : filePath(filePath), archiveRoot(archiveRoot) {}
+Archiver::Archiver(char* filePath, char* archiveRoot, QObject *parent) : QObject(parent), filePath(filePath), archiveRoot(archiveRoot) {}
 
 bool Archiver::enumerateArchive() {
 
@@ -21,7 +22,7 @@ bool Archiver::enumerateArchive() {
         return false;
     }
     // Пройтись по всем элементам архива
-    loopThroughFiles(archiveRoot, za);
+    this->loopThroughFiles(this->archiveRoot, za);
     // Закрыть файл с архивом (если не получилось - сообщить об ошибке)
     if (zip_close(za) == -1) {
         qDebug() << "Cant close the archive";
@@ -40,7 +41,6 @@ bool Archiver::loopThroughFiles(const char* archiveRoot, struct zip *za) {
         if (zip_stat_index(za, i, 0, &zipStat) == 0) {
 
             currentItemNameLength = strlen(zipStat.name);
-            qDebug() << zipStat.name;
             char bufForFileName[300]; // Буфер для имени файла с учётом корневой папки
             strcpy(bufForFileName, archiveRoot);
             strcat(bufForFileName, zipStat.name);
@@ -54,10 +54,13 @@ bool Archiver::loopThroughFiles(const char* archiveRoot, struct zip *za) {
 
                 writeCurrentFile(i, za, zipStat, bufForFileName);
             }
+            if (i && zip_get_num_entries(za, 0))
+                emit archiverProgressSignal(i, zip_get_num_entries(za, 0));
         }
     }
     return true;
 }
+
 
 bool Archiver::writeCurrentFile(int i, struct zip *za, struct zip_stat zipStat, char bufForFileName[]) {
     struct zip_file *zipFile; // Структура для работы с текущим файлом архива

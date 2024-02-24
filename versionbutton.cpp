@@ -22,6 +22,7 @@ VersionButton::VersionButton(Version versionVal, int index, QWidget *parent) :
     this->setObjectName(QString::number(index));
     this->setText(name+" "+version_text);
     this->installEventFilter(this);
+    height = index*110+5;
     this->setGeometry(QRect(22, index*110+5, 300, 100));
     QObject::connect(this, SIGNAL(clicked(bool)), this, SLOT(clickSlot()));
     QString css;
@@ -29,6 +30,7 @@ VersionButton::VersionButton(Version versionVal, int index, QWidget *parent) :
     css = "QPushButton { color:white; border-radius: 10px; ";
     css.append("border: 2px solid rgb(129, 120, 177); ");
     css.append("background: url(" + version.photo +  "); }");
+    qDebug() << version.photo;
     setStyleSheet(css);
 }
 
@@ -42,7 +44,16 @@ int& VersionButton::getWidth() {
 
 void VersionButton::setWidth(int width) {
     this->width = width;
-    this->setGeometry(QRect(22 - width, index*110+5, 300 + width, 100));
+    this->setGeometry(QRect(22 - width, height, 300 + width, 100));
+}
+
+int& VersionButton::getHeight() {
+    return height;
+}
+
+void VersionButton::setHeight(int&& height) {
+    this->height = height;
+    this->setGeometry(QRect(22 - width, height, 300 + width, 100));
 }
 
 void VersionButton::SetColor(const QColor& color)
@@ -64,7 +75,7 @@ const QColor& VersionButton::GetColor() const
     return m_currentColor;
 }
 
-Version VersionButton::getVersion() {
+const Version& VersionButton::getVersion() const {
     return version;
 }
 

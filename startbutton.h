@@ -24,7 +24,7 @@ protected:
 
 private:
     QColor m_currentColor = QColor(149, 140, 197);
-    int m_currentHeight = 412;
+    int m_currentHeight = 60;
     QPropertyAnimation m_pressAnimation;
     QPropertyAnimation m_colorAnimation;
     QLabel* box;

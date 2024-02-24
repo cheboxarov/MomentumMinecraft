@@ -15,8 +15,8 @@ void Downloader::downloadFile(const QUrl &url, const QString &destination) {
             saveToFile(reply, destination);
             emit downloadFinished();
         } else {
-            emit downloadFinished();
             qDebug() << "Download failed:" << reply->errorString();
+            emit downloadError();
         }
 
         // Clean up resources

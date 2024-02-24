@@ -1,10 +1,14 @@
 #ifndef ARCHIVER_H
 #define ARCHIVER_H
-class Archiver
+#include "QObject"
+class Archiver : public QObject
 {
+    Q_OBJECT
 public:
-    Archiver(char* filePath, char* archiveRoot);
+    Archiver(char* filePath, char* archiveRoot, QObject *parent = nullptr);
     bool enumerateArchive();
+signals:
+    void archiverProgressSignal(int i, int full);
 private:
     char* filePath;
     char* archiveRoot;

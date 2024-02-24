@@ -1,4 +1,4 @@
-QT       += core gui
+QT += core gui
 QT += network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -24,6 +24,7 @@ HEADERS += \
     archiver.h \
     config.h \
     downloader.h \
+    json.hpp \
     mainwindow.h \
     qregexp.h \
     startbutton.h \
@@ -45,5 +46,3 @@ INCLUDEPATH += "C:\Users\Den\vcpkg\packages\libssh_x64-windows\include"
 LIBS += -L"C:\Users\Den\vcpkg\packages\libssh_x64-windows\lib" -lssh
 INCLUDEPATH += "C:\Users\Den\vcpkg\packages\libzip_x64-windows\include"
 LIBS += -L"C:\Users\Den\vcpkg\packages\libzip_x64-windows\lib" -lzip
-INCLUDEPATH += "C:\libs\jni\include"
-LUBS += "C:\libs\jni\lib" -ljvm

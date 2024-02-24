@@ -20,5 +20,6 @@ public slots:
 signals:
     void downloadProgress(qint64 bytesSent, qint64 bytesTotal);
     void downloadFinished();
+    void downloadError();
 };
 #endif // DOWNLOADER_H

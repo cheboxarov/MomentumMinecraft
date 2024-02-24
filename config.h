@@ -2,6 +2,9 @@
 #define CONFIG_H
 
 #include "QString"
+#include "json.hpp"
+
+using json = nlohmann::json;
 
 class Config
 {

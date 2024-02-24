@@ -4,6 +4,9 @@
 #include <QDebug>
 #include "QLabel"
 #include "QFontDatabase"
+
+#define WIDTH 45
+
 StartButton::StartButton(QLabel* boxVal, QWidget *parent) :
     QPushButton(parent),
     m_pressAnimation(this, "height"),
@@ -11,7 +14,7 @@ StartButton::StartButton(QLabel* boxVal, QWidget *parent) :
     box(boxVal)
 {
     box->setObjectName("startButtonBox");
-    box->setGeometry(QRect(20, GetHeight()+8, 330, 65));
+    box->setGeometry(QRect(WIDTH, GetHeight()+8, 330, 65));
     box->setStyleSheet("background-color: rgb(109, 100, 157); border-radius:17px; border: 2px solid rgb(89, 80, 137)");
     installEventFilter(this);
     int id = QFontDatabase::addApplicationFont(":/image/images/minecraft.ttf");
@@ -19,7 +22,7 @@ StartButton::StartButton(QLabel* boxVal, QWidget *parent) :
     QFont minectaft_font(family);
     this->setFont(minectaft_font);
     this->setObjectName("startButton");
-    this->setGeometry(QRect(20, GetHeight(), 330, 65));
+    this->setGeometry(QRect(WIDTH, GetHeight(), 330, 65));
     QString css;
     css = "QPushButton { color:white; font-size: 30px; border-radius:17px;";
     css.append("border: 3px solid rgb(129, 120, 177); ");
@@ -42,7 +45,7 @@ void StartButton::SetColor(const QColor& color)
 }
 
 void StartButton::SetHeight(int height) {
-    this->setGeometry(QRect(20, height, 330, 65));
+    this->setGeometry(QRect(WIDTH, height, 330, 65));
 
 }
 

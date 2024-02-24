@@ -16,9 +16,11 @@ public:
     void setSelected(bool state);
     void setWidth(int width);
     int& getWidth();
+    void setHeight(int&& height);
+    int& getHeight();
     bool isSelected();
     int getIndex();
-    Version getVersion();
+    const Version& getVersion() const;
 protected:
     bool eventFilter(QObject *obj, QEvent *e);
 public slots:
@@ -30,6 +32,7 @@ private:
     bool selected;
     QColor m_currentColor = QColor(149, 140, 197);
     int width = 0;
+    int height;
     QString name;
     QString version_text;
     QPropertyAnimation m_selectAnimation;
