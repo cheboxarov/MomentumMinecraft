@@ -15,6 +15,17 @@
 #include <QWheelEvent>
 #include <thread>
 
+void replaceFirst(
+    std::string& s,
+    const std::string& toReplace,
+    const std::string& replaceWith)
+{
+    std::size_t pos = s.find(toReplace);
+    if (pos == std::string::npos)
+        return;
+    s.replace(pos, toReplace.length(), replaceWith);
+}
+
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
       isInUpperDrag(false),
@@ -59,20 +70,21 @@ void MainWindow::initializeMainWindow()
 {
     startButton = new StartButton(new QLabel(ui->groupBox_3), ui->groupBox_3);
 
-    int fontId = QFontDatabase::addApplicationFont(":/image/images/minecraft.ttf");
-    const QString& fontFamily = QFontDatabase::applicationFontFamilies(fontId).at(0);
-    QFont minecraftFont(fontFamily);
+    int id = QFontDatabase::addApplicationFont(":/image/images/minecraft.ttf");
+    QString fontFamily = QFontDatabase::applicationFontFamilies(id).at(0);
+    QFont minecraftFont;
+    minecraftFont.setFamily(fontFamily);
 
     minecraftFont.setPixelSize(16);
     ui->textAbout->setFont(minecraftFont);
     ui->textAbout->setAlignment(Qt::AlignCenter);
-    ui->textAbout->setIndent(5);
+    ui->textAbout->setIndent(10);
 
     minecraftFont.setWeight(QFont::Bold);
     minecraftFont.setPixelSize(35);
     ui->titleAbout->setFont(minecraftFont);
 
-    minecraftFont.setPixelSize(30);
+    minecraftFont.setPixelSize(25);
     ui->downloadProgress->setFont(minecraftFont);
     ui->downloadProgress->setAlignment(Qt::AlignCenter);
 
@@ -134,13 +146,13 @@ void MainWindow::setSelectedVersionButton(int index)
     ui->titleAbout->setAlignment(Qt::AlignCenter);
     ui->textAbout->setText(versions->getLoadedVersions()[index].description);
     selectedVersionIndex = btn->getVersion().id;
-    qDebug() << selectedVersionIndex;
+    qDebug() << "Version selected:" << selectedVersionIndex;
     setReadyToStart(isVersionDownloaded(false));
 }
 
 void MainWindow::onVersionButtonClick(int index)
 {
-    if (!isDownloading())
+    if (!isDownloading()  && !isArchiver())
     {
         for (VersionButton* btn : versionButtons)
         {
@@ -152,6 +164,15 @@ void MainWindow::onVersionButtonClick(int index)
                 btn->setSelected(false);
         }
     }
+}
+
+bool MainWindow::isArchiver() const {
+    return archiverState;
+}
+
+void MainWindow::setArchiver(bool state) {
+    archiverState = state;
+    startButton->setActive(!state);
 }
 
 bool MainWindow::isDownloading() const
@@ -185,6 +206,30 @@ void MainWindow::updateDownloadProgress(qint64 bytesSent, qint64 bytesTotal)
     }
 }
 
+void MainWindow::archiverProgress(int current, int total)
+{
+    QString text("Распаковка " + QString::number((float)current / total * 100, 'f', 1) + " %");
+    ui->downloadProgress->setText(text);
+}
+
+void MainWindow::archiverFinished() {
+    setArchiver(false);
+    if (getSelectedVersion().isNull)
+        return;
+    std::string startCmd(getSelectedVersion().startcmd);
+    qDebug() << getSelectedVersion().startcmd;
+    if (client.nickname == "Твой никнейм")
+        ui->clientNameLine->setText("Выберите ник!");
+    if (client.nickname != "Твой никнейм" && client.nickname != "Выберите ник!")
+        {
+        Config::saveConfig(client.nickname);
+        replaceFirst(startCmd, "nickname", client.nickname.toStdString());
+        this->hide();
+        system(startCmd.c_str());
+        this->show();
+    }
+}
+
 void MainWindow::downloadSelectedVersion()
 {
     if (getSelectedVersion().isNull)
@@ -206,20 +251,13 @@ void MainWindow::stopDownloading()
     setDownloading(false);
 }
 
-void replaceFirst(
-    std::string& s,
-    const std::string& toReplace,
-    const std::string& replaceWith)
-{
-    std::size_t pos = s.find(toReplace);
-    if (pos == std::string::npos)
-        return;
-    s.replace(pos, toReplace.length(), replaceWith);
-}
-
 void MainWindow::onStartButtonClick()
 {
-    setReadyToStart(isVersionDownloaded(true));
+    setArchiver(true);
+    std::thread th([&](){
+        setReadyToStart(isVersionDownloaded(true));
+    });
+    th.detach();
     if (!isReadyToStart)
     {
         if (!isDownloading())
@@ -229,23 +267,6 @@ void MainWindow::onStartButtonClick()
         else
         {
             stopDownloading();
-        }
-    }
-    else
-    {
-        if (getSelectedVersion().isNull)
-            return;
-        std::string startCmd(getSelectedVersion().startcmd);
-        qDebug() << getSelectedVersion().startcmd;
-        if (client.nickname == "Твой никнейм")
-            ui->clientNameLine->setText("Выберите ник!");
-        if (client.nickname != "Твой никнейм" && client.nickname != "Выберите ник!")
-        {
-            Config::saveConfig(client.nickname);
-            replaceFirst(startCmd, "nickname", client.nickname.toStdString());
-            this->hide();
-            system(startCmd.c_str());
-            this->show();
         }
     }
 }
@@ -272,11 +293,6 @@ bool dirExists(const std::string& dirName_in)
     return false;
 }
 
-void MainWindow::archiverProgress(int current, int total)
-{
-    ui->downloadProgress->setText("Распаковка" + QString::number(current) + " / " + QString::number(total));
-}
-
 bool MainWindow::isVersionDownloaded(bool withArchive) const
 {
     if (getSelectedVersion().isNull)
@@ -295,8 +311,9 @@ bool MainWindow::isVersionDownloaded(bool withArchive) const
         const std::string& gameDir = QString(QCoreApplication::applicationDirPath() + "/game").toStdString();
         if (!dirExists(gameDir) && !this->isHidden() && withArchive)
         {
-            Archiver archiver((char*)repository.toStdString().c_str(), "");
+            Archiver archiver((char*)repository.toStdString().c_str());
             QObject::connect(&archiver, &Archiver::archiverProgressSignal, this, &MainWindow::archiverProgress);
+            QObject::connect(&archiver, &Archiver::archiverFinished, this, &MainWindow::archiverFinished);
             archiver.enumerateArchive();
         }
         ui->downloadProgress->setText("");
@@ -313,10 +330,10 @@ void MainWindow::on_pushButton_clicked()
 
 bool MainWindow::eventFilter(QObject* obj, QEvent* e)
 {
-    if (obj == (QObject*)ui->scrollArea) {
+    if (obj == (QObject*)ui->scrollArea)
+    {
         if (e->type() == QEvent::Enter)
         {
-            qDebug() << "1";
             isInScrollArea = true;
         }
         if (e->type() == QEvent::Leave)
@@ -377,22 +394,30 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event)
 
 void MainWindow::wheelEvent(QWheelEvent* event) {
     if (isInScrollArea) {
-        if (event->angleDelta().ry() > 0) {
-            if (wheelOffset > 0) {
-                for (VersionButton* btn : versionButtons) {
+        if (event->angleDelta().ry() > 0)
+        {
+            if (wheelOffset > 0)
+            {
+                for (VersionButton* btn : versionButtons)
+                {
                     int height = btn->getHeight();
-                    btn->setHeight(height+30);
+                    btn->setHeight(height+40);
                 }
                 wheelOffset -= 1;
             }
-        } else {
-            for (VersionButton* btn : versionButtons) {
-                int height = btn->getHeight();
-                btn->setHeight(height-30);
-            }
-            wheelOffset += 1;
         }
-        qDebug() << event->angleDelta().ry() << wheelOffset;
+        else
+        {
+            if (versionButtons.size() > 4 && wheelOffset < versionButtons.size() * 1.5)
+            {
+                for (VersionButton* btn : versionButtons)
+                {
+                    int height = btn->getHeight();
+                    btn->setHeight(height-40);
+                }
+                wheelOffset += 1;
+            }
+        }
     }
 }
 

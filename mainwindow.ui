@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="resource.qrc">
-    <normaloff>:/image/images/icon.png</normaloff>:/image/images/icon.png</iconset>
+    <normaloff>:/image/images/icons8-minecraft-96.png</normaloff>:/image/images/icons8-minecraft-96.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">background:rgba(0,0,0,0);

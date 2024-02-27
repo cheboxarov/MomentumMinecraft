@@ -60,6 +60,8 @@ const QColor& StartButton::GetColor() const
 
 bool StartButton::eventFilter(QObject *obj, QEvent *e)
 {
+    if (!active)
+        return false;
     if (e->type() == QEvent::MouseButtonRelease) {
         SetHeight(GetHeight());
     }
@@ -79,6 +81,13 @@ bool StartButton::eventFilter(QObject *obj, QEvent *e)
     return false;
 }
 
+void StartButton::setActive(bool state) {
+    this->setEnabled(state);
+    active = state;
+    if (!state) {
+        this->setText("Загрузка");
+    }
+}
 
 void StartButton::StartHoverEnterAnimation()
 {

@@ -18,6 +18,8 @@ public:
     int& GetHeight();
     void SetHeight(int height);
     const QColor& GetColor() const;
+    void setActive(bool state);
+    bool isActive();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *e);
@@ -30,5 +32,6 @@ private:
     QLabel* box;
     void StartHoverEnterAnimation();
     void StartHoverLeaveAnimation();
+    bool active = true;
 };
 #endif // STARTBUTTON_H

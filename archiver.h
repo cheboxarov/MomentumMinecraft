@@ -5,10 +5,11 @@ class Archiver : public QObject
 {
     Q_OBJECT
 public:
-    Archiver(char* filePath, char* archiveRoot, QObject *parent = nullptr);
+    Archiver(char* filePath, char* archiveRoot = "", QObject *parent = nullptr);
     bool enumerateArchive();
 signals:
     void archiverProgressSignal(int i, int full);
+    void archiverFinished();
 private:
     char* filePath;
     char* archiveRoot;

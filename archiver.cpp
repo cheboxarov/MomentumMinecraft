@@ -28,6 +28,7 @@ bool Archiver::enumerateArchive() {
         qDebug() << "Cant close the archive";
         return false;
     }
+    emit archiverFinished();
     return true;
 }
 

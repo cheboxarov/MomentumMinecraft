@@ -32,6 +32,8 @@ public:
     void setSelectedVersionButton(int index);
     bool isDownloading() const;
     void setDownloading(bool state);
+    bool isArchiver() const;
+    void setArchiver(bool state);
     bool isVersionDownloaded(bool isFirst = false) const;
     void downloadSelectedVersion();
     void stopDownloading();
@@ -46,6 +48,7 @@ public slots:
     void onStartButtonClick();
     const Version& getSelectedVersion() const;
     void archiverProgress(int current, int total);
+    void archiverFinished();
 
 private slots:
     void on_pushButton_clicked();
@@ -67,7 +70,7 @@ private:
     int selectedVersionIndex;
     bool downloading;
     bool isReadyToStart;
-
+    bool archiverState = true;
     struct Client {
         QString nickname;
     } client;
